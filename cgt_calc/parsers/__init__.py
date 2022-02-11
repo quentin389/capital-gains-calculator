@@ -12,6 +12,7 @@ from cgt_calc.const import DEFAULT_INITIAL_PRICES_FILE
 from cgt_calc.exceptions import UnexpectedColumnCountError
 from cgt_calc.model import BrokerTransaction
 from cgt_calc.resources import RESOURCES_PACKAGE
+from .custom import read_custom_transactions
 
 from .mssb import read_mssb_transactions
 from .schwab import read_schwab_transactions
@@ -42,6 +43,7 @@ class InitialPricesEntry:
 
 
 def read_broker_transactions(
+    custom_transactions_file: str | None,
     schwab_transactions_file: str | None,
     schwab_awards_transactions_file: str | None,
     trading212_transactions_folder: str | None,
@@ -50,6 +52,13 @@ def read_broker_transactions(
 ) -> list[BrokerTransaction]:
     """Read transactions for all brokers."""
     transactions = []
+    if custom_transactions_file is not None:
+        transactions += read_custom_transactions(
+            custom_transactions_file
+        )
+    else:
+        print("WARNING: No custom file provided")
+
     if schwab_transactions_file is not None:
         transactions += read_schwab_transactions(
             schwab_transactions_file, schwab_awards_transactions_file
