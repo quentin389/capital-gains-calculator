@@ -26,6 +26,22 @@ def create_parser() -> argparse.ArgumentParser:
         help="First year of the tax year to calculate gains on (default: %(default)d)",
     )
     parser.add_argument(
+        "--split-year-start",
+        type=str,
+        nargs="?",
+        help="""
+        Date before which the taxes should not be calculated due to split year rules.
+        """,
+    )
+    parser.add_argument(
+        "--split-year-end",
+        type=str,
+        nargs="?",
+        help="""
+        Date after which the taxes should not be calculated due to split year rules.
+        """,
+    )
+    parser.add_argument(
         "--custom",
         type=str,
         nargs="?",

@@ -16,7 +16,7 @@ from . import render_latex
 from .args_parser import create_parser
 from .const import BED_AND_BREAKFAST_DAYS, CAPITAL_GAIN_ALLOWANCES, INTERNAL_START_DATE
 from .currency_converter import CurrencyConverter
-from .dates import get_tax_year_end, get_tax_year_start, is_date
+from .dates import get_tax_year_dates, is_date
 from .exceptions import (
     AmountMissingError,
     CalculatedAmountDiscrepancyError,
@@ -66,12 +66,15 @@ class CapitalGainsCalculator:
         converter: CurrencyConverter,
         initial_prices: InitialPrices,
         balance_check: bool = True,
+        split_year_start: str | None = None,
+        split_year_end: str | None = None,
     ):
         """Create calculator object."""
         self.tax_year = tax_year
 
-        self.tax_year_start_date = get_tax_year_start(tax_year)
-        self.tax_year_end_date = get_tax_year_end(tax_year)
+        (self.tax_year_start_date, self.tax_year_end_date) = get_tax_year_dates(
+            tax_year, split_year_start, split_year_end
+        )
 
         self.converter = converter
         self.initial_prices = initial_prices
@@ -677,7 +680,12 @@ def main() -> int:
     initial_prices = InitialPrices(read_initial_prices(args.initial_prices))
 
     calculator = CapitalGainsCalculator(
-        args.year, converter, initial_prices, balance_check=args.balance_check
+        args.year,
+        converter,
+        initial_prices,
+        balance_check=args.balance_check,
+        split_year_start=args.split_year_start,
+        split_year_end=args.split_year_end,
     )
     # First pass converts broker transactions to HMRC transactions.
     # This means applying same day rule and collapsing all transactions with

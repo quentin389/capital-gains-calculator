@@ -2,6 +2,8 @@ WARNING: No custom file provided
 WARNING: No schwab file provided
 WARNING: No trading212 folder provided
 WARNING: No mssb folder provided
+Tax year start date set to 2020-04-06
+Tax year end date set to 2021-04-05
 First pass completed
 Final portfolio:
   FX:ETH: 2.59
