@@ -2,21 +2,16 @@
 from __future__ import annotations
 
 import csv
-from datetime import date, datetime
+from datetime import date
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
 from typing import Final, Iterable, Iterator, List
 
+from cgt_calc.dates import parse_date
 from cgt_calc.exceptions import InvalidTransactionError, ParsingError
 from cgt_calc.model import ActionType, BrokerTransaction
 
 STOCK_ACTIVITY_COMMENT_MARKER: Final[str] = "Stock Activity"
-
-
-def parse_date(val: str) -> date:
-    """Parse a Sharesight report date."""
-
-    return datetime.strptime(val, "%d/%m/%Y").date()
 
 
 def parse_decimal(val: str) -> Decimal:
@@ -78,7 +73,7 @@ def parse_dividend_payments(
 
         row_dict = dict(zip(columns, row))
 
-        dividend_date = parse_date(row_dict["Date Paid"])
+        dividend_date = parse_date(row_dict["Date Paid"], "%d/%m/%Y")
         symbol = row_dict["Code"]
         description = row_dict["Comments"]
         broker = "Sharesight"
@@ -183,7 +178,7 @@ def parse_trades(
 
         market = row_dict["Market"]
         symbol = f"{market}:{row_dict['Code']}"
-        trade_date = parse_date(row_dict["Date"])
+        trade_date = parse_date(row_dict["Date"], "%d/%m/%Y")
         quantity = parse_decimal(row_dict["Quantity"])
         price = parse_decimal(row_dict["Price *"])
         fees = maybe_decimal(row_dict["Brokerage *"]) or Decimal(0)
@@ -214,7 +209,7 @@ def parse_trades(
         # Make quantity always positive
         quantity = abs(quantity)
 
-        # Create the transaction object now so we can report it in exceptions
+        # Create the transaction object now, so we can report it in exceptions
         transaction = SharesightTransaction(
             date=trade_date,
             action=action,

@@ -13,6 +13,7 @@ from cgt_calc.exceptions import UnexpectedColumnCountError
 from cgt_calc.model import BrokerTransaction
 from cgt_calc.resources import RESOURCES_PACKAGE
 
+from ..dates import parse_date
 from .custom import read_custom_transactions
 from .mssb import read_mssb_transactions
 from .schwab import read_schwab_transactions
@@ -28,14 +29,9 @@ class InitialPricesEntry:
         if len(row) != 3:
             raise UnexpectedColumnCountError(row, 3, file)
         # date,symbol,price
-        self.date = self._parse_date(row[0])
+        self.date = parse_date(row[0], "%b %d, %Y")
         self.symbol = row[1]
         self.price = Decimal(row[2])
-
-    @staticmethod
-    def _parse_date(date_str: str) -> datetime.date:
-        """Parse date from string."""
-        return datetime.datetime.strptime(date_str, "%b %d, %Y").date()
 
     def __str__(self) -> str:
         """Return string representation."""
@@ -52,6 +48,7 @@ def read_broker_transactions(
 ) -> list[BrokerTransaction]:
     """Read transactions for all brokers."""
     transactions = []
+
     if custom_transactions_file is not None:
         transactions += read_custom_transactions(custom_transactions_file)
     else:

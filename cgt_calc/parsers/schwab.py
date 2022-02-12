@@ -9,6 +9,7 @@ from decimal import Decimal
 import itertools
 from pathlib import Path
 
+from cgt_calc.dates import parse_date
 from cgt_calc.exceptions import (
     ParsingError,
     SymbolMissingError,
@@ -114,7 +115,7 @@ class SchwabTransaction(BrokerTransaction):
             date_str = row[0][index:]
         else:
             date_str = row[0]
-        date = datetime.datetime.strptime(date_str, "%m/%d/%Y").date()
+        date = parse_date(date_str, "%m/%d/%Y")
         self.raw_action = row[1]
         action = action_from_str(self.raw_action)
         symbol = row[2] if row[2] != "" else None

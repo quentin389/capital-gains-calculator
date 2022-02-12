@@ -6,11 +6,11 @@ for another company, or for a full profile.
 from __future__ import annotations
 
 import csv
-from datetime import datetime
 from decimal import Decimal
 from pathlib import Path
 from typing import Final
 
+from cgt_calc.dates import parse_date
 from cgt_calc.exceptions import ParsingError, UnexpectedColumnCountError
 from cgt_calc.model import ActionType, BrokerTransaction
 
@@ -75,7 +75,7 @@ def _init_from_release_report(row_raw: list[str], filename: str) -> BrokerTransa
     amount = quantity * price
 
     return BrokerTransaction(
-        date=datetime.strptime(row["Vest Date"], "%d-%b-%Y").date(),
+        date=parse_date(row["Vest Date"], "%d-%b-%Y"),
         action=ActionType.STOCK_ACTIVITY,
         symbol=KNOWN_SYMBOL_DICT[row["Plan"]],
         description=row["Plan"],
@@ -112,7 +112,7 @@ def _init_from_withdrawal_report(
     amount = _hacky_parse_decimal(row["Net Amount"][1:])
 
     return BrokerTransaction(
-        date=datetime.strptime(row["Date"], "%d-%b-%Y").date(),
+        date=parse_date(row["Date"], "%d-%b-%Y"),
         action=ActionType.SELL,
         symbol=KNOWN_SYMBOL_DICT[row["Plan"]],
         description=row["Plan"],

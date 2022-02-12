@@ -2,11 +2,11 @@
 from __future__ import annotations
 
 import csv
-import datetime
 from decimal import Decimal
 from enum import Enum
 from pathlib import Path
 
+from cgt_calc.dates import parse_date
 from cgt_calc.exceptions import ParsingError, UnexpectedColumnCountError
 from cgt_calc.model import ActionType, BrokerTransaction
 
@@ -54,7 +54,7 @@ class CustomTransaction(BrokerTransaction):
         if len(row) != CustomColumns.count():
             raise UnexpectedColumnCountError(row, CustomColumns.count(), file)
         date_str = row[CustomColumns.DATE.value]
-        date = datetime.datetime.strptime(date_str, "%Y-%m-%d").date()
+        date = parse_date(date_str, "%Y-%m-%d")
         self.raw_action = row[CustomColumns.ACTION.value]
         action = action_from_str(self.raw_action)
         symbol = (
