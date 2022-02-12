@@ -1,0 +1,5 @@
+Date,Action,Symbol,Quantity,Price,Fees,Amount,Currency,Broker
+2020-03-20,BUY,FOO,2,100,0,-200,GBP,Fake Broker
+2020-03-23,SELL,FOO,2,110,0,220,GBP,Fake Broker
+2020-03-24,BUY,FOO,9,90,0,-810,GBP,Fake Broker
+2020-03-25,BUY,FOO,1,95,0,-95,GBP,Fake Broker

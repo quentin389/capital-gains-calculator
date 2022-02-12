@@ -1,3 +1,4 @@
+WARNING: No custom file provided
 WARNING: No schwab file provided
 WARNING: No trading212 folder provided
 WARNING: No mssb folder provided

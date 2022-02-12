@@ -12,8 +12,8 @@ from cgt_calc.const import DEFAULT_INITIAL_PRICES_FILE
 from cgt_calc.exceptions import UnexpectedColumnCountError
 from cgt_calc.model import BrokerTransaction
 from cgt_calc.resources import RESOURCES_PACKAGE
-from .custom import read_custom_transactions
 
+from .custom import read_custom_transactions
 from .mssb import read_mssb_transactions
 from .schwab import read_schwab_transactions
 from .sharesight import read_sharesight_transactions
@@ -53,9 +53,7 @@ def read_broker_transactions(
     """Read transactions for all brokers."""
     transactions = []
     if custom_transactions_file is not None:
-        transactions += read_custom_transactions(
-            custom_transactions_file
-        )
+        transactions += read_custom_transactions(custom_transactions_file)
     else:
         print("WARNING: No custom file provided")
 

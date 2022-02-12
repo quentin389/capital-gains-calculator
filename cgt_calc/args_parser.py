@@ -29,7 +29,24 @@ def create_parser() -> argparse.ArgumentParser:
         "--custom",
         type=str,
         nargs="?",
-        help="my custom transaction format",
+        help="""
+        Custom transaction format so you can import data from any broker.
+
+        Columns:
+            Date,Action,Symbol,Quantity,Price,Fees,Amount,Currency,Broker.
+
+        Definitions:
+            Date = 2021-03-23 (%%Y-%%m-%%d);
+            Action = Buy | Sell (case insensitive);
+            Symbol = FOO (ticker, or other method of identification of share groups);
+            Quantity = integer > 0;
+            Price = price per 1 share, float > 0;
+            Fees = sum af all fees and commissions in the same currency as the prices, float >= 0;
+            Amount = gain/loss of YOUR cash, including fees,
+                     positive for sale transactions, negative for buy transactions;
+            Currency = USD (currency symbol);
+            Broker = Name of the broker;
+        """,
     )
     parser.add_argument(
         "--schwab",

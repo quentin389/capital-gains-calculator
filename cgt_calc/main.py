@@ -369,7 +369,7 @@ class CapitalGainsCalculator:
                 same_day_gain = same_day_proceeds - same_day_allowable_cost
                 chargeable_gain += same_day_gain
                 LOGGER.debug(
-                    "SAME DAY, quantity %d, gain %s, disposal price %s, "
+                    "SAME DAY, quantity %s, gain %s, disposal price %s, "
                     "acquisition price %s",
                     available_quantity,
                     same_day_gain,
@@ -383,7 +383,7 @@ class CapitalGainsCalculator:
                 current_amount -= available_quantity * acquisition_price
                 if current_quantity == 0:
                     assert (
-                        round_decimal(current_amount, 23) == 0
+                        round_decimal(current_amount, 22) == 0
                     ), f"current amount {current_amount}"
                 fees = disposal_fees * available_quantity / original_disposal_quantity
                 calculation_entries.append(
@@ -402,6 +402,8 @@ class CapitalGainsCalculator:
         # Bed and breakfast rule next
         if disposal_quantity > 0:
             for i in range(BED_AND_BREAKFAST_DAYS):
+                if disposal_quantity == 0:
+                    break
                 search_index = date_index + datetime.timedelta(days=i + 1)
                 if has_key(acquisition_list, search_index, symbol):
                     (
@@ -426,7 +428,6 @@ class CapitalGainsCalculator:
                             _same_day_amount,
                             _same_day_fees,
                         ) = astuple(disposal_list[search_index][symbol])
-                    assert same_day_quantity <= acquisition_quantity
 
                     # This can be some management fee entry or already used
                     # by bed and breakfast rule
@@ -434,7 +435,7 @@ class CapitalGainsCalculator:
                         acquisition_quantity
                         - same_day_quantity
                         - bed_and_breakfast_quantity
-                        == 0
+                        <= 0
                     ):
                         continue
                     print(
@@ -458,7 +459,7 @@ class CapitalGainsCalculator:
                     )
                     chargeable_gain += bed_and_breakfast_gain
                     LOGGER.debug(
-                        "BED & BREAKFAST, quantity %d, gain %s, disposal price %s, "
+                        "BED & BREAKFAST, quantity %s, gain %s, disposal price %s, "
                         "acquisition price %s",
                         available_quantity,
                         bed_and_breakfast_gain,
@@ -503,7 +504,7 @@ class CapitalGainsCalculator:
             allowable_cost = current_amount * disposal_quantity / current_quantity
             chargeable_gain += proceeds_amount - allowable_cost
             LOGGER.debug(
-                "SECTION 104, quantity %d, gain %s, proceeds amount %s, "
+                "SECTION 104, quantity %s, gain %s, proceeds amount %s, "
                 "allowable cost %s",
                 disposal_quantity,
                 proceeds_amount - allowable_cost,
@@ -600,7 +601,7 @@ class CapitalGainsCalculator:
                             symbol
                         ].quantity
                         LOGGER.debug(
-                            "DISPOSAL on %s of %s, quantity %d, capital gain $%s",
+                            "DISPOSAL on %s of %s, quantity %s, capital gain $%s",
                             date_index,
                             symbol,
                             transaction_quantity,
@@ -665,7 +666,12 @@ def main() -> int:
 
     # Read data from input files
     broker_transactions = read_broker_transactions(
-        args.custom, args.schwab, args.schwab_award, args.trading212, args.mssb, args.sharesight
+        args.custom,
+        args.schwab,
+        args.schwab_award,
+        args.trading212,
+        args.mssb,
+        args.sharesight,
     )
     converter = CurrencyConverter(args.exchange_rates_file)
     initial_prices = InitialPrices(read_initial_prices(args.initial_prices))
